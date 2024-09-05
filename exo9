@@ -1,0 +1,68 @@
+
+
+pwd: aris24hotel
+gmail: aristotekasanda0@gmail.com
+
+
+
+-----------------
+
+Pour réaliser ce scénario de backup avec une instance EC2 et un bucket S3, voici les étapes détaillées pour la création des instances EC2 et S3, la configuration des permissions IAM, et la création du script de backup.
+
+1. Création d'une instance EC2
+Lancer une instance EC2 qui exécutera le script de backup.
+
+Étapes :
+Accédez à la console AWS Management Console.
+Allez dans la section EC2.
+Cliquez sur Launch Instance et choisissez une AMI (Amazon Machine Image), comme Amazon Linux 2.
+Sélectionnez un type d'instance approprié (ex : t2.micro pour usage léger).
+Configurez le réseau (VPC, sous-réseau, etc.).
+Dans l'onglet IAM role, sélectionnez le rôle IAM que vous créerez dans l’étape suivante (avec accès S3 complet).
+Configurez le stockage et les tags si nécessaire.
+Créez ou sélectionnez un Security Group avec les ports nécessaires (SSH pour accès, port 22).
+Lancez l’instance et connectez-vous via SSH.
+
+2. Création d'un bucket S3
+Créez un bucket S3 pour stocker les fichiers de backup.
+
+Étapes :
+Accédez à la console S3.
+Cliquez sur Create bucket.
+Donnez un nom unique au bucket (par ex. my-backup-bucket).
+Configurez la région, la gestion de la version, et autres paramètres selon les besoins.
+Cliquez sur Create bucket pour finaliser.
+
+#3. Configuration des permissions avec IAM
+Créez un rôle IAM pour que l'instance EC2 puisse accéder au bucket S3 et effectuer des opérations de lecture/écriture.
+
+Étapes :
+Accédez à la console IAM.
+Allez dans Roles et cliquez sur Create role.
+Sélectionnez AWS Service et choisissez EC2.
+Cliquez sur Next: Permissions.
+Recherchez et sélectionnez la politique AmazonS3FullAccess pour accorder à l'instance EC2 un accès complet au service S3.
+Attachez ce rôle à votre instance EC2 lors de son lancement (ou modifiez son rôle s'il est déjà lancé).
+
+#4. creation du backup
+#crée un dossier 
+mkdir file_name
+#Acceder a la plate-forme amazon web service,puis crée un role et un bucket S3 puis donner les autorisations IAM fullacces S3,puis lier IAM a l'instance EC2
+#zipper le dossier avec un script shell et la sauvegarder sur s3
+
+
+#!/bin/bash
+
+# Chemin local vers votre dossier à sauvegarder
+SOURCE="/home/ec2-user/amisi"
+
+# Nom de votre compartiment S3
+BUCKET_NAME="mondisque"
+
+# Créez une archive tar du dossier
+tar -cvf backup.tar $SOURCE
+
+# Chargez l'archive dans Amazon S3
+aws s3 cp backup.tar s3://mondisque/
+
+
